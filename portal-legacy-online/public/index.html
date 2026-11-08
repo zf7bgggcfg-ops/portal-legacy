@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Legacy</title>
+<style>
+:root{--bg:#090b0e;--panel:#11151a;--panel2:#0c1014;--line:#29313a;--red:#f04452;--cyan:#38d9d0;--gold:#f0bd54;--muted:#89939e;--white:#edf1f4}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 55% 15%,#20252b 0,#0b0e12 48%,#07090b 100%);color:var(--white);font-family:Arial,Helvetica,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer}
+.top{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#080a0dcc;position:sticky;top:0;z-index:5}
+.brand{font-weight:900;letter-spacing:1.8px}.brand span{color:var(--cyan)}.top small{color:var(--muted);letter-spacing:2px}
+.layout{display:grid;grid-template-columns:76px 1fr;min-height:calc(100vh - 58px)}
+nav{background:#050607;border-right:1px solid #20252b;padding:12px 7px;display:flex;flex-direction:column;gap:7px}
+nav button{background:transparent;border:1px solid transparent;color:#7d8791;padding:12px 3px;font-size:10px;letter-spacing:.5px;border-radius:3px}
+nav button b{display:block;font-size:17px;margin-bottom:5px}nav button.active,nav button:hover{color:var(--red);border-color:#642b32;background:#210f13}
+main{padding:28px clamp(14px,4vw,58px);max-width:1500px;width:100%;margin:auto}
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(27px,4vw,43px);margin:8px 0 4px;font-weight:900;letter-spacing:-1px}
+.subtitle{color:var(--muted);font-size:13px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid var(--line);padding:7px 10px;color:var(--gold);font-size:11px;letter-spacing:1px}
+.grid{display:grid;grid-template-columns:minmax(210px, .78fr) minmax(360px,1.65fr) minmax(210px,.78fr);gap:17px;align-items:start}
+.panel{background:linear-gradient(145deg,#14191f,#090c10);border:1px solid #252c34;box-shadow:0 12px 30px #0005;padding:17px;margin-bottom:16px}
+.panel h3{font-size:14px;margin:0 0 16px;letter-spacing:.7px}.panel h3 i{color:var(--red);font-style:normal;margin-right:8px}
+.stat{margin:12px 0}.statline{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1px;color:#aab3bc;margin-bottom:6px}.statline strong{color:white}
+.bar{height:4px;background:#252a30}.bar span{height:100%;display:block;background:linear-gradient(90deg,var(--red),var(--gold))}
+.story{padding:28px 30px;min-height:510px}.story h2{font-size:clamp(24px,3vw,36px);line-height:1.08;margin:13px 0 20px;text-transform:uppercase}
+.story p{font-family:Georgia,serif;font-size:17px;line-height:1.75;color:#d7dce1}
+.objective{border-left:2px solid var(--cyan);padding:9px 14px;margin:20px 0;color:#b9c3cc;font-family:Georgia,serif;font-size:14px}
+.objective strong{display:block;color:var(--cyan);font: bold 10px Arial;letter-spacing:1.5px;margin-bottom:7px}
+.choice{width:100%;text-align:left;background:#090c10;border:1px solid #303741;color:var(--white);padding:15px 17px;margin:6px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;transition:.15s}
+.choice:hover{border-color:var(--red);transform:translateY(-1px);background:#171116}.choice strong{display:block;font-size:14px;margin-bottom:7px}.choice small{font-size:10px;color:var(--muted);letter-spacing:1px}.arrow{color:#747f89;font-size:22px}
+.tag{display:inline-block;font-size:9px;padding:4px 7px;border:1px solid #245c61;color:var(--cyan);margin-right:6px}
+.right-item{font-size:12px;color:#bdc5cc;border-bottom:1px solid #20262d;padding:9px 0;display:flex;justify-content:space-between;gap:8px}.right-item em{font-style:normal;color:var(--muted);font-size:10px}
+.journal-entry{border-left:2px solid var(--red);padding:3px 0 3px 11px;margin:12px 0;font-size:11px;line-height:1.5;color:#c5cbd1}
+.muted{color:var(--muted)}.hidden{display:none!important}
+.creator{max-width:760px;margin:5vh auto;background:#11151a;border:1px solid #303741;padding:clamp(20px,4vw,42px);box-shadow:0 20px 70px #0008}
+.creator h1{font-size:42px}.field{margin:20px 0}.field label{display:block;color:#aeb8c2;font-size:10px;letter-spacing:1.5px;margin-bottom:9px}
+input,select{width:100%;background:#080b0e;color:#ffffff;border:1px solid #38d9d0;padding:13px;outline:none;min-height:46px}
+select option{background:#11151a;color:#ffffff;padding:10px}
+select:focus{border-color:#38d9d0}input:focus,select:focus{border-color:var(--cyan)}
+.options{display:flex;gap:8px;flex-wrap:wrap}.option{background:#0a0d11;border:1px solid #38414b;color:#aeb8c2;padding:11px 15px;font-size:11px}.option.selected{border-color:var(--red);color:var(--red);background:#211014}
+.primary{background:var(--red);border:1px solid var(--red);color:white;font-weight:bold;letter-spacing:1px;padding:13px 20px}.secondary{background:transparent;border:1px solid #46515c;color:#cbd2d9;padding:10px 14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.toast{position:fixed;bottom:18px;right:18px;background:#182329;border:1px solid var(--cyan);padding:12px 16px;color:white;z-index:10}
+#tabContent{min-height:350px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr 1.6fr}.rightcol{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.rightcol .panel{margin:0}}
+@media(max-width:680px){.layout{grid-template-columns:54px 1fr}nav button{font-size:8px}main{padding:16px 10px}.grid{grid-template-columns:1fr}.leftcol{display:grid;grid-template-columns:1fr 1fr;gap:10px}.leftcol .panel{margin:0}.rightcol{grid-template-columns:1fr 1fr}.story{padding:20px 16px}.story p{font-size:15px}.top{padding:0 12px}}
+
+/* --- Optimisation mobile PORTAL LEGACY --- */
+@media(max-width:680px){
+  html{ -webkit-text-size-adjust:100%; }
+  body{min-height:100dvh;padding-bottom:env(safe-area-inset-bottom)}
+  .top{height:auto;min-height:54px;padding:10px 12px;gap:8px;flex-wrap:wrap}
+  .brand{font-size:15px;letter-spacing:1px}
+  .top small{display:none}
+  #topPlayer{font-size:10px;margin-left:auto}
+  .layout{display:flex;flex-direction:column;min-height:calc(100dvh - 54px)}
+  nav{
+    position:sticky;top:0;z-index:6;width:100%;height:auto;
+    flex-direction:row;overflow-x:auto;overflow-y:hidden;
+    padding:7px 8px;gap:6px;border-right:0;border-bottom:1px solid #303741;
+    background:#07090bf5;scrollbar-width:thin;
+    -webkit-overflow-scrolling:touch;
+  }
+  nav button{
+    flex:0 0 auto;min-width:65px;min-height:52px;padding:6px 9px;
+    font-size:10px;letter-spacing:0;border:1px solid #252c34;
+    white-space:nowrap;
+  }
+  nav button b{font-size:17px;margin-bottom:3px}
+  main{padding:14px 12px 30px;width:100%;max-width:none}
+  .header{display:block;margin-bottom:15px}
+  .header .pills{margin-top:12px}
+  h1{font-size:clamp(25px,8vw,34px);line-height:1.05}
+  .subtitle{font-size:12px;line-height:1.5}
+  .grid{display:flex;flex-direction:column;gap:10px;width:100%}
+  .leftcol,.rightcol{display:flex;flex-direction:column;width:100%;gap:10px}
+  .leftcol .panel,.rightcol .panel{width:100%;margin:0}
+  .story{width:100%;min-height:0;padding:19px 15px}
+  .story h2{font-size:25px;line-height:1.12}
+  .story p{font-size:15px;line-height:1.65}
+  .panel{padding:14px;margin-bottom:10px}
+  .panel h3{margin-bottom:12px}
+  .choice{padding:14px 12px;min-height:58px;gap:8px}
+  .choice strong{font-size:13px;line-height:1.35}
+  .choice small{font-size:10px;line-height:1.4}
+  .arrow{font-size:20px;flex:0 0 auto}
+  .creator{margin:12px auto;padding:19px 14px;width:100%;max-width:none}
+  .creator h1{font-size:30px}
+  .field{margin:16px 0}
+  input,select{font-size:16px;min-height:48px}
+  .options{gap:7px}
+  .option{padding:12px 11px;min-height:42px;font-size:11px}
+  .actions{display:grid;grid-template-columns:1fr;width:100%}
+  .actions button,.primary,.secondary{width:100%;min-height:46px}
+  #tabContent{min-height:0}
+  .toast{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));text-align:center}
+  button{touch-action:manipulation}
+}
+@media(max-width:390px){
+  main{padding-left:9px;padding-right:9px}
+  .brand{font-size:13px}
+  nav button{min-width:59px;padding-left:7px;padding-right:7px;font-size:9px}
+  .story{padding:16px 12px}
+  .panel{padding:12px}
+}
+
+
+.auth-wrap{max-width:520px;margin:7vh auto;padding:24px;background:#11151a;border:1px solid #303741;box-shadow:0 20px 70px #0008}
+.auth-wrap h1{font-size:34px}.auth-tabs{display:flex;gap:8px;margin:18px 0}
+.auth-tabs button{flex:1}.auth-message{min-height:22px;color:#f0bd54;font-size:12px;line-height:1.4}
+.auth-note{font-size:11px;color:#89939e;line-height:1.6}
+.account-actions{display:flex;align-items:center;gap:8px}
+.account-actions button{font-size:10px;padding:7px 10px}
+@media(max-width:680px){.auth-wrap{margin:16px 10px;padding:19px 14px}.auth-wrap h1{font-size:29px}}
+
+</style>
+</head>
+<body>
+<div class="top"><div class="brand">PORTAL <span>///</span> LEGACY</div><small>FAN-MADE NARRATIVE RPG</small><div class="account-actions"><div id="topPlayer" class="muted">NON CONNECTÉ</div><button id="logoutBtn" class="secondary hidden" type="button" onclick="logout()">DÉCONNEXION</button></div></div>
+
+<div id="authScreen" class="auth-wrap">
+ <div class="eyebrow">PORTAL LEGACY · COMPTE JOUEUR</div>
+ <h1>REPRENDS TON AVENTURE.</h1>
+ <p class="subtitle">Crée un compte avec un pseudo et un mot de passe pour retrouver ta sauvegarde sur tes appareils.</p>
+ <div class="auth-tabs">
+  <button id="loginTab" class="primary" type="button" onclick="setAuthMode('login')">CONNEXION</button>
+  <button id="registerTab" class="secondary" type="button" onclick="setAuthMode('register')">CRÉER UN COMPTE</button>
+ </div>
+ <form id="authForm">
+  <div class="field"><label for="authUsername">PSEUDO</label><input id="authUsername" name="username" minlength="3" maxlength="20" autocomplete="username" required placeholder="Ex. PortalRider"></div>
+  <div class="field"><label for="authPassword">MOT DE PASSE</label><input id="authPassword" name="password" type="password" minlength="10" maxlength="72" autocomplete="current-password" required placeholder="10 caractères minimum"></div>
+  <button id="authSubmit" class="primary" type="submit">SE CONNECTER →</button>
+ </form>
+ <p id="authMessage" class="auth-message" role="status"></p>
+ <p class="auth-note">Utilise un mot de passe unique que tu n'emploies pas ailleurs. Ne partage jamais ton mot de passe. Aucun e-mail ni nom réel n'est demandé.</p>
+</div>
+
+<div id="creator" class="creator hidden">
+ <div class="eyebrow">PROTOCOL // NEW TIMELINE · ÉTAPE 1/2</div><h1>QUI ES-TU ?</h1><div class="subtitle">Chaque dimension a ses héros. Et ses problèmes. Ton espèce détermine les mondes où tu peux naître.</div>
+ <div class="field"><label>PRÉNOM / NOM DE TON PERSONNAGE</label><input id="name" maxlength="22" placeholder="Ex. Alex, Zorp, Rick-72..."></div>
+ <div class="field"><label>ÂGE AU DÉBUT DE L'AVENTURE</label><input id="startAge" type="number" min="5" max="15" value="15" placeholder="Ex. 15"></div>
+ <div class="field"><label>ESPÈCE</label><div class="options" data-group="species"><button class="option selected">Humain</button><button class="option">Alien</button><button class="option">Cyborg</button><button class="option">Mutant</button><button class="option">Clone</button></div></div>
+ <div class="field"><label>TON RÔLE</label><div class="options" data-group="role"><button class="option selected">Aventurier</button><button class="option">Scientifique</button><button class="option">Mercenaire</button><button class="option">Criminel</button><button class="option">Tyran</button><button class="option">Justicier</button></div></div>
+ <div class="field"><label>ALIGNEMENT</label><div class="options" data-group="alignment"><button class="option">Héros</button><button class="option selected">Neutre</button><button class="option">Méchant</button><button class="option">Imprévisible</button></div></div>
+ <div class="field"><label>NUMÉRO DE TA DIMENSION</label><input id="dimensionNumber" maxlength="12" value="" placeholder="Ex. C-137, J-42, dimension 08"><p class="muted" style="font-size:11px;margin-top:8px">C'est toi qui choisis le numéro de ta dimension d'origine. Elle sera ta réalité de naissance, différente de celle de Rick.</p></div>
+ <div class="field"><label>DIMENSION / MONDE DE NAISSANCE</label><select id="origin">
+<option value="Terre">Terre</option>
+<option value="Terre de la Fédération">Terre de la Fédération</option>
+<option value="Terre post-apocalyptique">Terre post-apocalyptique</option>
+<option value="Terre cyberpunk">Terre cyberpunk</option>
+<option value="Terre inconnue">Terre inconnue</option>
+</select><p id="originHint" class="muted" style="font-size:11px;margin-top:8px">Ta nature détermine les mondes compatibles avec ton espèce.</p></div>
+ <div class="field"><label>CHOISIS TA BACKSTORY</label><div class="options" data-group="backstory">
+ <button class="option selected">Enfance tranquille</button><button class="option">Orphelin du multivers</button><button class="option">Expérience de laboratoire</button><button class="option">Famille criminelle</button><button class="option">Ancien élève brillant</button><button class="option">Survivant d'une catastrophe</button><button class="option">Origines mystérieuses</button><button class="option">Enfant de la rue</button><button class="option">Morty Prime</button><button class="option">Rick C-137</button><button class="option">Evil Morty</button>
+ </div><p id="backstoryHint" class="muted" style="font-size:11px;margin-top:8px">Ta backstory détermine ton passé et le début de ton aventure.</p></div>
+ <button class="primary" id="create">OUVRIR LE PORTAIL →</button>
+ <p class="muted" style="font-size:11px;margin-top:18px">Choisis ton âge de départ (5 à 15 ans). À 16 ans, tu choisiras ta voie puis tu fabriqueras ton propre pistolet à portail. Sauvegarde automatique.</p>
+</div>
+<div id="game" class="layout hidden">
+<nav>
+<button class="active" data-tab="story"><b>⌂</b>JOURNAL</button>
+<button data-tab="missions"><b>⚑</b>MISSIONS</button>
+<button data-tab="character"><b>◈</b>PERSONNAGE</button>
+<button data-tab="relations"><b>♧</b>RELATIONS</button>
+<button data-tab="multiverse"><b>◎</b>MULTIVERS</button>
+<button data-tab="codex"><b>▤</b>CODEX</button>
+</nav>
+<main>
+ <div class="header"><div><div class="eyebrow" id="chapterLabel">DIMENSION C-137 · CHAPITRE 1</div><h1 id="pageTitle">CHRONIQUES</h1><div class="subtitle" id="pageSub">Ton histoire. Tes règles. Des conséquences bien réelles.</div></div><div class="pills"><span class="pill" id="agePill">15 ANS</span><span class="pill" id="cash">0 BLOTS</span><span class="pill" id="level">NIVEAU 1</span></div></div>
+ <div id="tabContent"></div>
+</main>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script>
+const $=s=>document.querySelector(s);
+const state={};let currentTab='story';
+const chapters=[
+{title:"UN PORTAIL, DEUX PROBLÈMES",place:"TERRE C-137 · EXTÉRIEUR DU GARAGE",text:"Une déchirure verte s'ouvre dans l'air au milieu d'un parking désert. Un homme en blouse blanche en sort, suivi d'un ado qui semble avoir déjà vécu cette scène beaucoup trop souvent. Le scientifique te remarque et plisse les yeux. « Super. Encore une anomalie qui marche et qui respire. Morty, touche à rien. » Le garçon te regarde : « Euh… salut ? Tu sais où on est ? »",goal:"Décider comment aborder les deux inconnus.",choices:[["A","Rester calme et demander des explications","Tu gardes tes distances et tu poses une question simple.","charisma",2,"Rick te trouve moins pénible que prévu."],["B","Proposer tes services à Rick","Tu prétends avoir des compétences utiles. Le scientifique semble intrigué.","intelligence",2,"Rick note ton nom dans son terminal."],["C","Essayer de passer le portail","Tu profites de leur distraction pour t'approcher de la faille.","courage",2,"Morty remarque ton audace."],["D","Exiger qu'ils te ramènent chez toi","Tu refuses de jouer leur jeu et demandes un retour immédiat.","will",2,"Rick soupire. Il n'aime pas qu'on lui donne des ordres."]]},
+{title:"LE PRIX D'UN RACCOURCI",place:"GARAGE DE RICK · C-137",text:"Le garage sent le métal chaud et les expériences ratées. Rick tapote un écran couvert de symboles. « Ton univers d'origine est introuvable dans ma liste. Ça arrive. Enfin… pas souvent. » Morty te tend une boisson en canette. Rick propose un marché : l'aider à récupérer un composant dans une dimension voisine, ou rester ici pendant qu'il cherche une solution.",goal:"Choisir ton premier vrai engagement.",choices:[["A","Accepter la mission de Rick","Tu veux comprendre le multivers avant de rentrer.","intelligence",3,"Une première mission est ajoutée à ton journal."],["B","Demander à Morty de t'aider à fuir","Tu préfères faire confiance au garçon plutôt qu'au scientifique.","charisma",3,"Morty devient plus confiant envers toi."],["C","Négocier une récompense avant d'accepter","Tu ne travailles pas gratuitement, même dans une autre dimension.","charisma",2,"Tu obtiens une petite avance en Blots."],["D","Refuser et chercher ton propre portail","Tu veux tracer ta route, sans devoir rien à personne.","will",3,"Tu gagnes en indépendance, mais Rick s'agace."]]},
+{title:"À TOI DE CHOISIR TA ROUTE",place:"GARAGE DE RICK · DÉPART",text:"Rick ouvre un portail vers la station interdimensionnelle. Il te lance un regard par-dessus son épaule. « Bon, tu viens avec nous, ou tu veux tenter ta chance tout seul ? Je ne vais pas te tenir la main à travers chaque dimension. » Morty attend ta réponse. Pour la première fois, tu peux décider de suivre Rick et son équipe… ou de partir construire ta propre histoire.",goal:"Choisir si tu veux rester avec Rick ou devenir indépendant.",choices:[["A","Rester avec Rick et Morty","Tu voyages avec eux pour le moment. Tu pourras toujours changer de voie plus tard.","charisma",3,"Tu choisis de voyager avec Rick. Des aventures communes pourront s'ouvrir."],["B","Partir seul et te débrouiller","Tu prends ton indépendance. Tu devras trouver tes propres contacts, missions et moyens de voyager.","will",4,"Tu deviens indépendant : ton aventure ne dépend plus de Rick."]]} ,
+{title:"LA STATION DES OUBLIÉS",place:"DIMENSION 4-B · STATION INTERDIMENSIONNELLE",text:"La station est un carrefour pour voyageurs, contrebandiers et créatures qui ne figurent dans aucun registre. Un écran annonce une prime pour retrouver un scientifique disparu. Dans le même temps, une silhouette encapuchonnée te propose un passage vers une dimension interdite. Tu comprends que chaque porte peut ouvrir une opportunité… ou un piège.",goal:"Décider quelle réputation tu veux construire.",choices:[["A","Aider les voyageurs de la station","Tu te fais connaître comme quelqu'un de fiable.","charisma",4,"Ta réputation positive augmente."],["B","Accepter la prime","Tu choisis l'argent et les informations.","intelligence",4,"Tu gagnes des Blots et une piste."],["C","Suivre la silhouette encapuchonnée","Tu préfères les secrets aux chemins officiels.","courage",4,"Une piste clandestine apparaît."],["D","Prendre le contrôle du terminal des primes","Tu veux que les opportunités viennent à toi.","will",4,"Les factions commencent à surveiller ton nom."]]}
+];
+function pick(group){document.querySelectorAll(`[data-group="${group}"] .option`).forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll(`[data-group="${group}"] .option`).forEach(x=>x.classList.remove('selected'));b.classList.add('selected')}))}
+['species','role','alignment','backstory'].forEach(pick);
+const backstoryDescriptions={
+ 'Enfance tranquille':'Tu as grandi dans un foyer ordinaire. Tu connais les bases de la vie quotidienne, mais le multivers est nouveau pour toi.',
+ 'Orphelin du multivers':'Tu as grandi sans famille stable, en apprenant à te débrouiller seul entre les difficultés de ta dimension.',
+ 'Expérience de laboratoire':'Tu as été élevé ou étudié dans un laboratoire. Tu connais quelques secrets scientifiques, mais ton passé reste trouble.',
+ 'Famille criminelle':'Tu as grandi auprès de personnes qui vivaient en marge de la loi. Tu as appris à négocier et à repérer les ennuis.',
+ 'Ancien élève brillant':'Tu étais connu pour ta curiosité et tes capacités. Tu as toujours voulu comprendre ce qui se cache derrière la réalité.',
+ "Survivant d'une catastrophe":'Un événement a bouleversé ton monde et changé ta vie. Tu as dû reconstruire ton quotidien après cette épreuve.',
+ 'Origines mystérieuses':'Tu ne connais pas toute ton histoire. Certains souvenirs sont flous et des questions restent sans réponse.',
+ 'Enfant de la rue':'Tu as grandi en ville, en apprenant à trouver des solutions et à te faire une place.',
+ 'Morty Prime':'Tu viens d’une réalité bouleversée par les conséquences des expériences d’un Rick. Tu as appris à survivre, à te méfier des portails et à ne plus faire confiance aveuglément.',
+ 'Rick C-137':'Ton passé est marqué par une perte qui t’a poussé à devenir indépendant et à comprendre la science du multivers. Tu as grandi avec une détermination froide et une curiosité immense.',
+ 'Evil Morty':'Tu as compris très tôt que les Ricks n’étaient pas forcément les héros de l’histoire. Tu as appris à observer, planifier et refuser qu’on décide de ton destin à ta place.'
+};
+document.querySelectorAll('[data-group="backstory"] .option').forEach(b=>b.addEventListener('click',()=>{$('#backstoryHint').textContent=backstoryDescriptions[b.textContent]||''}));
+
+const birthplaces={
+ 'Humain':[
+  ["Terre","Ta planète d\u0027origine."],
+  ['Terre de la Fédération','Une planète contrôlée par la Fédération Galactique.'],
+  ['Terre post-apocalyptique','Une planète ravagée où survivre est une compétence.'],
+  ['Terre cyberpunk','Une société dominée par les mégacorporations.'],
+  ['Terre inconnue','Une réalité dont personne ne connaît les règles.']],
+ 'Alien':[
+  ['Gazorpazorp','Un monde extraterrestre aux sociétés très différentes.'],
+  ['Blips and Chitz','Une planète de loisirs et de divertissement intergalactique.'],
+  ['Planète océanique','Un monde recouvert d’océans et de cités sous-marines.'],
+  ['Empire galactique','Une planète membre d’une grande civilisation alien.'],
+  ['Monde alien inconnu','Une espèce et une culture encore mystérieuses.']],
+ 'Cyborg':[
+  ['Dimension cybernétique','Une réalité où les implants et augmentations sont courants.'],
+  ['Forge-9','Une planète-usine remplie de machines autonomes.'],
+  ['Terre augmentée','Une Terre où humains et technologies ont fusionné.'],
+  ['Station mécanique','Une immense station spatiale construite autour d’une intelligence artificielle.']],
+ 'Mutant':[
+  ['Terre post-apocalyptique','Une planète transformée par des mutations.'],
+  ['Dimension toxique','Un monde où la vie s’est adaptée à un environnement extrême.'],
+  ['Laboratoire abandonné','Tu es né d’une expérience qui a mal tourné.'],
+  ['Planète sauvage','Une planète où les espèces évoluent très rapidement.']],
+ 'Clone':[
+  ['Citadelle des Ricks','Un centre de clonage lié aux affaires des Ricks.'],
+  ['Laboratoire clandestin','Tu as été créé dans un laboratoire secret.'],
+  ['Dimension miroir','Une réalité où les doubles et copies sont monnaie courante.'],
+  ['Station de reproduction','Un complexe spatial dédié à la création de clones.']]
+};
+function updateBirthplaces(){
+ const species=selected('species'),select=$('#origin'),previous=select.value;
+ select.innerHTML=birthplaces[species].map(x=>`<option value="${x[0]}">${x[0]}</option>`).join('');
+ if(birthplaces[species].some(x=>x[0]===previous))select.value=previous;
+ $('#originHint').textContent=birthplaces[species].find(x=>x[0]===select.value)?.[1]||'Ton origine influence ton histoire.';
+}
+document.querySelectorAll('[data-group="species"] .option').forEach(b=>b.addEventListener('click',updateBirthplaces));
+updateBirthplaces();
+function selected(group){return document.querySelector(`[data-group="${group}"] .selected`).textContent}
+let onlineAccount=null;
+let saveTimer=null;
+function save(){
+ const snapshot=JSON.stringify(state);
+ localStorage.setItem('multiverseRPsave',snapshot);
+ if(onlineAccount){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+   try{
+    const r=await fetch('/api/save',{method:'PUT',headers:{'Content-Type':'application/json'},body:snapshot,credentials:'same-origin'});
+    if(!r.ok)throw new Error('Sauvegarde en ligne impossible ('+r.status+').');
+   }catch(e){toast('Sauvegarde locale conservée. Synchronisation en attente.');}
+  },250);
+ }
+}
+
+let authMode='login';
+function setAuthMode(mode){
+ authMode=mode;
+ $('#loginTab').className=mode==='login'?'primary':'secondary';
+ $('#registerTab').className=mode==='register'?'primary':'secondary';
+ $('#authSubmit').textContent=mode==='login'?'SE CONNECTER →':'CRÉER MON COMPTE →';
+ $('#authPassword').autocomplete=mode==='login'?'current-password':'new-password';
+ $('#authMessage').textContent='';
+}
+async function authRequest(path,payload){
+ const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(payload)});
+ const data=await response.json().catch(()=>({error:'Réponse invalide du serveur.'}));
+ if(!response.ok)throw new Error(data.error||'Une erreur est survenue.');
+ return data;
+}
+function enterGame(savedState){
+ $('#authScreen').classList.add('hidden');
+ $('#logoutBtn').classList.remove('hidden');
+ if(savedState){
+  Object.keys(state).forEach(k=>delete state[k]);
+  Object.assign(state,savedState);
+  $('#creator').classList.add('hidden');
+  $('#game').classList.remove('hidden');
+  render();
+  toast('Sauvegarde récupérée !');
+ }else{
+  $('#creator').classList.remove('hidden');
+  $('#game').classList.add('hidden');
+ }
+}
+async function initAuth(){
+ $('#authForm').addEventListener('submit',async ev=>{
+  ev.preventDefault();
+  const username=$('#authUsername').value.trim();
+  const password=$('#authPassword').value;
+  $('#authSubmit').disabled=true;
+  $('#authMessage').textContent='Connexion au multivers…';
+  try{
+   const result=await authRequest(authMode==='login'?'/api/login':'/api/register',{username,password});
+   onlineAccount=result.username;
+   const saved=await fetch('/api/save',{credentials:'same-origin'});
+   if(!saved.ok)throw new Error('Impossible de charger ta sauvegarde.');
+   const data=await saved.json();
+   $('#topPlayer').textContent=onlineAccount.toUpperCase();
+   enterGame(data.save||null);
+  }catch(err){$('#authMessage').textContent=err.message;}
+  finally{$('#authSubmit').disabled=false;}
+ });
+ try{
+  const r=await fetch('/api/me',{credentials:'same-origin'});
+  if(r.ok){
+   const me=await r.json();onlineAccount=me.username;
+   const sr=await fetch('/api/save',{credentials:'same-origin'});
+   const data=sr.ok?await sr.json():{save:null};
+   $('#topPlayer').textContent=onlineAccount.toUpperCase();
+   enterGame(data.save||null);
+  }
+ }catch(e){$('#authMessage').textContent='Serveur indisponible. Réessaie dans un instant.';}
+}
+async function logout(){
+ try{await fetch('/api/logout',{method:'POST',credentials:'same-origin'});}catch(e){}
+ onlineAccount=null;location.reload();
+}
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2300)}
+
+const creationEffects={
+ species:{
+ 'Humain':['charisma',5,'Adaptabilité humaine'],'Alien':['courage',5,'Instinct extraterrestre'],'Cyborg':['intelligence',5,'Interface intégrée'],'Mutant':['will',5,'Mutation résistante'],'Clone':['intelligence',5,'Mémoire implantée']},
+ role:{
+ 'Aventurier':['courage',4,'Explorateur'],'Scientifique':['intelligence',8,'Esprit scientifique'],'Mercenaire':['courage',8,'Sang-froid'],'Criminel':['charisma',8,'Réseau clandestin'],'Tyran':['will',8,'Volonté de pouvoir'],'Justicier':['charisma',5,'Code moral']},
+ alignment:{
+ 'Héros':['charisma',4,'Instinct protecteur'],'Neutre':['intelligence',4,'Pragmatisme'],'Méchant':['will',4,'Ambition sombre'],'Imprévisible':['courage',4,'Esprit imprévisible']},
+ backstory:{
+ 'Enfance tranquille':['charisma',3,'Repères familiaux'],'Orphelin du multivers':['will',6,'Autonomie'],'Expérience de laboratoire':['intelligence',7,'Connaissances expérimentales'],'Famille criminelle':['charisma',6,'Contacts douteux'],'Ancien élève brillant':['intelligence',6,'Mémoire remarquable'],"Survivant d'une catastrophe":['courage',6,'Résilience'],'Origines mystérieuses':['will',3,'Passé énigmatique'],'Enfant de la rue':['courage',4,'Débrouillardise'],'Morty Prime':['will',7,'Survivant de Prime'],'Rick C-137':['intelligence',7,'Héritage scientifique'],'Evil Morty':['intelligence',6,'Stratège indépendant']}
+};
+function getCreationChoices(c){
+ const list=[...c.choices];
+ if(state.chapter===0){
+ let special=['E','Observer attentivement','Tu prends le temps de comprendre la situation avant de te dévoiler.','intelligence',2,'Tu as observé les détails avant d’agir.'];
+ if(state.species==='Cyborg')special=['E','Activer ton interface intégrée','Tes capteurs analysent le portail.','intelligence',3,'Ton interface détecte une signature dimensionnelle.'];
+ else if(state.species==='Alien')special=['E','Suivre ton instinct alien','Tes sens détectent une anomalie.','courage',3,'Ton instinct repère un danger.'];
+ else if(state.species==='Clone')special=['E','Consulter tes souvenirs implantés','Un souvenir artificiel remonte à la surface.','intelligence',3,'Un fragment de mémoire révèle un symbole.'];
+ else if(state.role==='Scientifique'||state.backstory==='Expérience de laboratoire')special=['E','Analyser les coordonnées','Tu étudies le portail avant de répondre.','intelligence',3,'Tu identifies une anomalie scientifique.'];
+ else if(state.role==='Criminel'||state.backstory==='Famille criminelle')special=['E','Chercher une occasion de négocier','Tu évalues ce que tu pourrais tirer de la rencontre.','charisma',3,'Tu repères une occasion de négocier.'];
+ else if(state.alignment==='Méchant'||state.role==='Tyran'||state.backstory==='Evil Morty')special=['E','Évaluer les faiblesses de Rick','Tu observes le scientifique sans révéler tes intentions.','will',3,'Tu mémorises quelques points faibles.'];
+ else if(state.backstory==='Morty Prime')special=['E','Questionner Morty sur les Ricks','Ton passé t’a appris à rester prudent avec eux.','will',3,'Morty remarque que tu connais les dangers du multivers.'];
+ else if(state.backstory==='Rick C-137')special=['E','Examiner son équipement','Certains détails scientifiques te semblent familiers.','intelligence',3,'Rick remarque ton regard connaisseur.'];
+ list.push(special);
+ }
+ return list;
+}
+
+function create(){let n=$('#name').value.trim();if(!n){toast('Entre un nom pour ton personnage.');return}
+let startAge=Math.max(5,Math.min(15,parseInt($('#startAge').value,10)||15));
+const species=selected('species'),role=selected('role'),alignment=selected('alignment'),backstory=selected('backstory');
+Object.assign(state,{name:n,species,role,alignment,origin:$('#origin').value,currentDimension:($('#dimensionNumber').value.trim()||'Inconnue'),visitedDimensions:[],dimensionNumber:($('#dimensionNumber').value.trim()||'Inconnue'),backstory,startAge,elapsedMonths:0,chapter:0,stats:{intelligence:30,charisma:30,courage:30,will:30},cash:25,xp:0,level:1,log:[],relations:{Rick:0,Morty:0},flags:[],traits:[]});
+for(const [g,v] of [['species',species],['role',role],['alignment',alignment],['backstory',backstory]]){const e=creationEffects[g]?.[v];if(e){state.stats[e[0]]=Math.min(100,state.stats[e[0]]+e[1]);state.traits.push(e[2]);}}
+if(role==='Criminel'||backstory==='Famille criminelle')state.cash+=30;
+if(role==='Scientifique'||backstory==='Expérience de laboratoire')state.flags.push('savoir_scientifique');
+if(alignment==='Méchant'||role==='Tyran')state.flags.push('ambition_sombre');
+state.log.push('CRÉATION — '+species+', '+role+', '+alignment+'. Backstory : '+backstory+'. Dimension : '+state.dimensionNumber+'.');save();$('#creator').classList.add('hidden');$('#game').classList.remove('hidden');render()}
+function ageNow(){return state.startAge+Math.floor((state.elapsedMonths||0)/12)}
+function ageStage(age){if(age<12)return 'ENFANCE';if(age<18)return 'ADOLESCENCE';if(age<26)return 'JEUNE ADULTE';if(age<60)return 'ÂGE ADULTE';return 'SAGESSE'}
+function ageDescription(age){if(age<12)return 'Tu es encore jeune : tu découvres le monde et apprends très vite.';if(age<18)return 'Tu gagnes en autonomie, affirmes ton caractère et développes tes talents.';if(age<26)return 'Tu construis ton identité et prends pleinement tes décisions.';if(age<60)return 'Ton expérience forge ta réputation et ta manière d’agir.';return 'Ton vécu est une force : tes choix portent le poids de nombreuses années.'}
+function birthdayGrowth(age){if(age<12){state.stats.intelligence=Math.min(100,state.stats.intelligence+1)}else if(age<18){state.stats.courage=Math.min(100,state.stats.courage+1);state.stats.will=Math.min(100,state.stats.will+1)}else if(age<30){state.stats.intelligence=Math.min(100,state.stats.intelligence+1);state.stats.charisma=Math.min(100,state.stats.charisma+1)}else if(age<60){state.stats.charisma=Math.min(100,state.stats.charisma+1);state.stats.will=Math.min(100,state.stats.will+1)}else{state.stats.intelligence=Math.min(100,state.stats.intelligence+1);state.stats.will=Math.min(100,state.stats.will+1)}}
+$('#create').onclick=create;
+function statName(k){return ({intelligence:'INTELLIGENCE',charisma:'CHARISME',courage:'AUDACE',will:'VOLONTÉ'})[k]||k}
+function render(){ $('#topPlayer').textContent=state.name.toUpperCase();$('#agePill').textContent=ageNow()+' ANS · '+ageStage(ageNow());$('#cash').textContent=state.cash+' BLOTS';$('#level').textContent='NIVEAU '+state.level;$('#chapterLabel').textContent='DIMENSION '+(state.currentDimension||state.dimensionNumber||'INCONNUE').toUpperCase()+' · CHAPITRE '+(state.chapter+1);document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===currentTab));
+const area=$('#tabContent');if(currentTab==='story')renderStory(area);else if(currentTab==='character')renderCharacter(area);else if(currentTab==='missions')renderMissions(area);else if(currentTab==='relations')renderRelations(area);else if(currentTab==='multiverse')renderMultiverse(area);else renderCodex(area)}
+function renderStory(a){$('#pageTitle').textContent='CHRONIQUES';$('#pageSub').textContent=state.name+' · '+state.role+' · '+state.alignment;
+if(state.chapter===3&&!state.portalGun){renderPortalWorkshop(a);return}
+let c=chapters[Math.min(state.chapter,chapters.length-1)];let storyChoices=getCreationChoices(c);
+if(state.chapter>=chapters.length){renderFreeRoam(a);return}
+a.innerHTML=`<div class="grid"><div class="leftcol"><section class="panel"><h3><i>ϟ</i> STATISTIQUES</h3>${Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="statline"><span>${statName(k)}</span><strong>${v}</strong></div><div class="bar"><span style="width:${Math.min(100,v)}%"></span></div></div>`).join('')}</section><section class="panel"><h3><i>▣</i> ÉQUIPEMENT</h3><div class="right-item"><span>Combinaison de voyageur</span><em>ÉQUIPÉ</em></div><div class="right-item"><span>Communicateur fissuré</span><em>COMMUN</em></div></section></div><section class="panel story"><div class="eyebrow">${c.place} · <span style="color:var(--gold)">RÉCIT NARRATIF</span></div><h2>${c.title}</h2><p>${state.chapter===0?`Tu viens de la dimension ${state.dimensionNumber}, un monde connu sous le nom de ${state.origin}. ${backstoryDescriptions[state.backstory]||''} ${state.traits.join(' · ')}. `:''}${state.chapter===3&&state.path==='solo'?'Tu as choisi de partir sans Rick. Tu arrives à la station sans son aide : personne ne te doit rien, mais personne ne décide à ta place. ':state.chapter===3&&state.path==='rick'?'Tu as choisi de rester avec Rick et Morty. Ils t’attendent près du portail et tu continues quelque temps à leurs côtés. ':''}${state.chapter===1&&state.flags.includes('savoir_scientifique')?'Rick remarque tes connaissances scientifiques. ':''}${state.chapter===1&&state.flags.includes('ambition_sombre')?'Rick garde un œil méfiant sur toi. ':''}${state.chapter===1&&state.species==='Cyborg'?'Ton interface détecte plusieurs appareils inconnus dans le garage. ':''}${c.text}</p><div class="objective"><strong>OBJECTIF</strong>• ${c.goal}</div>${storyChoices.map((x,i)=>`<button class="choice" onclick="choose(${i})"><span><strong><span style="color:var(--red)">${x[0]}.</span> ${x[1]}</strong><small><span class="tag">CHOIX NARRATIF</span> ${statName(x[3])} +${x[4]}</small></span><span class="arrow">›</span></button>`).join('')}</section><div class="rightcol"><section class="panel"><h3><i>♧</i> RELATIONS</h3>${Object.entries(state.relations).map(([k,v])=>`<div class="right-item"><span>${k}</span><em>${v>3?'Confiance':v<0?'Méfiance':'Neutre'}</em></div>`).join('')}</section><section class="panel"><h3><i>▤</i> JOURNAL</h3>${state.log.slice(-4).reverse().map(x=>`<div class="journal-entry">${x}</div>`).join('')||'<span class="muted">Aucun événement enregistré.</span>'}</section></div></div>`}
+function choose(i){let c=chapters[state.chapter],x=getCreationChoices(c)[i];let oldAge=ageNow(),oldStage=ageStage(oldAge);state.stats[x[3]]=Math.min(100,state.stats[x[3]]+x[4]);state.xp+=25;state.cash+=x[0]==='C'?10:5;
+let monthsPassed=state.chapter===0?6:(state.chapter===1?Math.max(0,(16-oldAge)*12):([6,9,12,18][i]||12));state.elapsedMonths=(state.elapsedMonths||0)+monthsPassed;
+let newAge=ageNow();for(let a=oldAge+1;a<=newAge;a++)birthdayGrowth(a);
+if(newAge>oldAge){state.log.push('ANNIVERSAIRE — Ton personnage fête ses '+newAge+' ans. Ses expériences le font grandir.');}
+if(ageStage(newAge)!==oldStage){state.log.push('NOUVELLE ÉTAPE DE VIE — '+ageStage(newAge)+'. Ton personnage entre dans une nouvelle période de sa vie.');}
+if(state.chapter===0){state.relations.Rick+=i===1?2:i===3?-1:0;state.relations.Morty+=i===0?2:i===2?1:0}else if(state.chapter===1){state.relations.Morty+=i===1?2:0;state.relations.Rick+=i===0?1:i===3?-2:0}else if(state.chapter===2){state.path=i===0?'rick':'solo';if(i===0){state.relations.Rick+=2;state.relations.Morty+=2}else{state.relations.Rick-=1;state.relations.Morty-=1}}
+state.log.push(`CHAPITRE ${state.chapter+1} — ${x[0]}. ${x[1]} ${x[5]}`);state.chapter++;if(state.xp>=50){state.level++;state.xp=0}save();render();window.scrollTo(0,0)}
+
+const questTemplates=[
+ {title:'Signal perdu',kind:'EXPLORATION',desc:'Un signal de détresse provient d’un secteur isolé. Retrouve sa source.',reward:35,xp:30},
+ {title:'Colis interdimensionnel',kind:'LIVRAISON',desc:'Un marchand te confie un paquet à remettre sans l’ouvrir.',reward:25,xp:20},
+ {title:'Les archives disparues',kind:'ENQUÊTE',desc:'Des données importantes ont disparu. Interroge les habitants et rassemble les indices.',reward:40,xp:35},
+ {title:'Créature en fuite',kind:'CONTRAT',desc:'Une créature inconnue rôde près d’une zone habitée. Il faut la retrouver et sécuriser le secteur.',reward:45,xp:40},
+ {title:'Le défi du champion',kind:'BOSS',desc:'Un combattant réputé bloque l’accès à une zone. Affronte-le dans un duel d’entraînement.',reward:60,xp:55}
+];
+function dimensionName(id){return dimensionCatalog.find(d=>d.id===id)?.name||state.origin||'Dimension inconnue'}
+function renderFreeRoam(a){
+ $('#pageTitle').textContent='CHRONIQUES';$('#pageSub').textContent=state.name+' · AVENTURE LIBRE';
+ const d=dimensionName(state.currentDimension||state.dimensionNumber);
+ const age=ageNow();
+ const active=state.quests.find(q=>q.status==='active');
+ a.innerHTML=`<div class="grid"><div class="leftcol">
+ <section class="panel"><h3><i>ϟ</i> TON PERSONNAGE</h3>
+ <div class="right-item"><span>Âge</span><strong>${age} ans · ${ageStage(age)}</strong></div>
+ <div class="right-item"><span>Réputation</span><strong>${state.reputation||0}</strong></div>
+ <div class="right-item"><span>Boss vaincus</span><strong>${state.bossWins||0}</strong></div>
+ <div class="right-item"><span>Quêtes terminées</span><strong>${(state.completedQuests||[]).length}</strong></div></section>
+ <section class="panel"><h3><i>▣</i> CONSÉQUENCES</h3><p class="muted">${state.alignment==='Méchant'?'Les habitants prudents se méfient de tes intentions.':state.alignment==='Héros'?'Certains habitants espèrent que tu viendras les aider.':'Ton passé et tes décisions déterminent la façon dont on t’accueille.'} ${state.role==='Scientifique'?'Tes connaissances ouvrent des options d’analyse.':state.role==='Criminel'?'Tu connais les réseaux clandestins.':state.role==='Tyran'?'Ton autorité peut impressionner certains adversaires.':''}</p></section>
+ </div>
+ <section class="panel story"><div class="eyebrow">AVENTURE LIBRE · ${d.toUpperCase()}</div><h2>LE MULTIVERS CONTINUE.</h2>
+ <p>Le prologue est terminé. Tu n’es plus limité à l’histoire de Rick et Morty : tu peux voyager, accepter des contrats, te faire des alliés et construire ta propre réputation. Chaque mission fait avancer le temps et peut influencer tes prochaines possibilités.</p>
+ <div class="objective"><strong>TA SITUATION</strong>Tu te trouves dans ${d}. ${ageDescription(age)}</div>
+ ${active?`<div class="panel"><div class="eyebrow">MISSION EN COURS · ${active.kind}</div><h3>${active.title}</h3><p>${active.desc}</p><p class="muted">Objectif : ${active.step===0?'Choisir ton approche.':'Terminer la mission.'}</p><button class="primary" onclick="continueQuest()">POURSUIVRE LA MISSION →</button></div>`:`<button class="primary" onclick="currentTab='missions';render()">CONSULTER LES MISSIONS →</button>`}
+ <button class="choice" onclick="exploreLocal()"><span><strong>Explorer cette dimension</strong><small>Découvrir un lieu et faire avancer le temps</small></span><span class="arrow">›</span></button>
+ <button class="choice" onclick="restAndAge()"><span><strong>Se reposer et préparer la suite</strong><small>Récupérer et avancer de 3 mois</small></span><span class="arrow">›</span></button>
+ <button class="choice" onclick="randomEncounter()"><span><strong>Rencontre imprévue</strong><small>Un événement lié à ton profil peut survenir</small></span><span class="arrow">›</span></button>
+ </section><div class="rightcol">
+ <section class="panel"><h3><i>♧</i> RELATIONS</h3>${Object.entries(state.relations).map(([k,v])=>`<div class="right-item"><span>${k}</span><em>${v>3?'Confiance':v<0?'Méfiance':'Neutre'}</em></div>`).join('')}</section>
+ <section class="panel"><h3><i>▤</i> JOURNAL</h3>${state.log.slice(-5).reverse().map(x=>`<div class="journal-entry">${x}</div>`).join('')}</section>
+ </div></div>`;
+}
+function advanceMonths(n){
+ const old=ageNow(),stage=ageStage(old);state.elapsedMonths=(state.elapsedMonths||0)+n;
+ const now=ageNow();for(let a=old+1;a<=now;a++){birthdayGrowth(a);state.log.push('ANNIVERSAIRE — '+now+' ans : ton expérience grandit.');}
+ if(ageStage(now)!==stage)state.log.push('ÉTAPE DE VIE — Tu entres dans la période : '+ageStage(now)+'.');
+}
+function exploreLocal(){
+ const places=['un marché local','une ruelle commerçante','un laboratoire abandonné','une place publique','un ancien observatoire'];
+ const place=places[Math.floor(Math.random()*places.length)];
+ advanceMonths(1);state.xp+=12;state.log.push('EXPLORATION — Tu découvres '+place+' sur '+dimensionName(state.currentDimension)+'.');
+ if(state.xp>=50){state.level++;state.xp-=50;state.log.push('PROGRESSION — Niveau '+state.level+' atteint.');}
+ save();render();toast('Nouvelle découverte !');
+}
+function restAndAge(){advanceMonths(3);state.log.push('TEMPS — Trois mois de repos et de préparation.');save();render();toast('Trois mois se sont écoulés.');}
+function randomEncounter(){
+ const options=[
+  {text:'Un habitant demande ton aide.',stat:'charisma',delta:2,rep:2},
+  {text:'Tu repères une anomalie technologique.',stat:'intelligence',delta:2,rep:1},
+  {text:'Un voyageur te provoque en duel amical.',stat:'courage',delta:2,rep:1},
+  {text:'Un groupe veut te recruter.',stat:'will',delta:2,rep:2}
+ ];
+ const e=options[(state.level+ageNow()+state.log.length)%options.length];
+ state.stats[e.stat]=Math.min(100,state.stats[e.stat]+e.delta);state.reputation=(state.reputation||0)+e.rep;
+ advanceMonths(1);state.log.push('RENCONTRE — '+e.text+' Tu gagnes '+e.delta+' en '+statName(e.stat)+'.');
+ save();render();toast('Rencontre enregistrée dans le journal.');
+}
+function ensureQuests(){
+ if(state.quests.length)return;
+ const seed=(state.visitedDimensions.length+(state.level||1))%questTemplates.length;
+ for(let i=0;i<3;i++){const t=questTemplates[(seed+i)%questTemplates.length];state.quests.push({...t,id:'Q'+Date.now()+i,status:'available',step:0,dimension:state.currentDimension||state.dimensionNumber});}
+}
+function acceptQuest(id){const q=state.quests.find(x=>x.id===id);if(!q)return;if(state.quests.some(x=>x.status==='active')){toast('Termine d’abord ta mission en cours.');return}q.status='active';q.step=0;state.log.push('MISSION ACCEPTÉE — '+q.title+' sur '+dimensionName(q.dimension)+'.');save();render();}
+function continueQuest(){
+ const q=state.quests.find(x=>x.status==='active');if(!q)return;
+ if(q.kind==='BOSS'){startBoss(q);return}
+ const stat=q.kind==='ENQUÊTE'?'intelligence':q.kind==='LIVRAISON'?'charisma':q.kind==='EXPLORATION'?'courage':'will';
+ const bonus=state.stats[stat]>=45;
+ const success=bonus||state.stats[stat]>=30;
+ advanceMonths(2);
+ if(success){completeQuest(q,'Ton approche ('+statName(stat)+') te permet de réussir.');}
+ else{q.step=1;state.log.push('MISSION — Tu rencontres un obstacle. Il faudra insister ou changer d’approche.');save();render();toast('Obstacle rencontré : réessaie.');}
+}
+function completeQuest(q,detail){
+ q.status='completed';state.completedQuests.push(q.id);state.cash+=q.reward;state.xp+=q.xp;state.reputation=(state.reputation||0)+3;
+ if(state.xp>=50){state.level++;state.xp-=50;state.log.push('NIVEAU — Tu passes au niveau '+state.level+'.');}
+ state.log.push('MISSION TERMINÉE — '+q.title+'. '+detail+' Récompense : '+q.reward+' Blots.');
+ save();render();toast('Mission terminée !');
+}
+function startBoss(q){
+ const bossNames=['Le Gardien chromé','Le Chasseur de failles','Le Champion de la Citadelle','Le Colosse dimensionnel'];
+ const boss=bossNames[(state.bossWins||0)%bossNames.length];
+ const canTech=state.stats.intelligence>=40||state.role==='Scientifique';
+ const canTalk=state.stats.charisma>=40||state.role==='Criminel'||state.alignment==='Héros';
+ const attack=state.stats.courage>=40||state.role==='Mercenaire';
+ const choices=[
+  `<button class="choice" onclick="bossAction('force')"><span><strong>Tenir bon et agir avec courage</strong><small>${attack?'Ton expérience de combat t’aide.':'Une approche risquée.'}</small></span><span class="arrow">›</span></button>`,
+  `<button class="choice" onclick="bossAction('tech')"><span><strong>Analyser son point faible</strong><small>${canTech?'Tes connaissances te donnent un avantage.':'Tu improvises une stratégie.'}</small></span><span class="arrow">›</span></button>`,
+  `<button class="choice" onclick="bossAction('talk')"><span><strong>Tenter de négocier</strong><small>${canTalk?'Ton profil facilite le dialogue.':'Il faudra trouver les bons mots.'}</small></span><span class="arrow">›</span></button>`
+ ];
+ const a=$('#tabContent');currentTab='story';$('#pageTitle').textContent='COMBAT DE BOSS';$('#pageSub').textContent='Un duel qui peut changer ta réputation';
+ a.innerHTML=`<section class="panel story"><div class="eyebrow">BOSS · ${dimensionName(q.dimension).toUpperCase()}</div><h2>${boss}</h2><p>Le champion s’avance et bloque le passage. Le duel est un affrontement d’adresse et de stratégie : observe, choisis ton approche et adapte-toi.</p><div class="objective"><strong>ADVERSAIRE</strong>Un adversaire coriace. Tes statistiques, ton rôle et tes choix comptent.</div>${choices.join('')}</section>`;
+}
+function bossAction(kind){
+ const q=state.quests.find(x=>x.status==='active');if(!q)return;
+ let stat=kind==='force'?'courage':kind==='tech'?'intelligence':'charisma';
+ let bonus=state.stats[stat]>=40||(kind==='force'&&state.role==='Mercenaire')||(kind==='tech'&&state.role==='Scientifique')||(kind==='talk'&&state.alignment==='Héros');
+ advanceMonths(1);
+ if(bonus){state.bossWins=(state.bossWins||0)+1;state.stats.will=Math.min(100,state.stats.will+2);completeQuest(q,'Tu remportes le duel grâce à '+statName(stat)+'.');}
+ else{state.log.push('DUEL — Ta stratégie échoue cette fois. Le champion te laisse une chance de revenir mieux préparé.');q.step=1;save();render();toast('Le boss résiste. Améliore tes stats ou tente une autre approche.');}
+}
+function renderPortalWorkshop(a){
+$('#pageTitle').textContent='ATELIER DE PORTAIL';$('#pageSub').textContent='16 ANS · TON PREMIER PISTOLET À PORTAIL';
+a.innerHTML=`<section class="panel story"><div class="eyebrow">ÉTAPE IMPORTANTE · ÂGE ${ageNow()} ANS</div><h2>TON PISTOLET À PORTAIL</h2><p>À 16 ans, tu décides de fabriquer ton propre pistolet à portail. Rick peut te donner quelques conseils si tu as choisi de rester avec lui, mais la conception finale t'appartient. Si tu es parti seul, tu te débrouilles avec les pièces et les connaissances que tu as réunies.</p>
+<div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+<div class="panel"><h3>STYLE / DESIGN</h3><div class="options" data-group="gunStyle">
+<button class="option selected" type="button" onclick="pickGunStyle(this,'Rick C-137')">Rick C-137</button>
+<button class="option" type="button" onclick="pickGunStyle(this,'Rick Prime')">Rick Prime</button>
+<button class="option" type="button" onclick="pickGunStyle(this,'Evil Morty')">Evil Morty</button>
+<button class="option" type="button" onclick="pickGunStyle(this,'Personnalisé')">Personnalisé</button>
+</div><p class="muted" id="gunStyleDesc">Design classique, robuste et bricolé, avec une silhouette reconnaissable.</p>
+<label class="field"><label for="gunName">NOM DE TON PISTOLET</label><input id="gunName" maxlength="24" value="Mon portail"></label>
+<label class="field"><label for="gunColor">COULEUR DU PORTAIL</label><input id="gunColor" type="color" value="#35e6a1" style="height:48px;padding:4px"></label>
+<label class="field"><label for="gunBody">COULEUR DU PISTOLET</label><input id="gunBody" type="color" value="#aab2bd" style="height:48px;padding:4px"></label>
+</div>
+<div class="panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+<h3>APERÇU DE TON PORTAIL</h3><div id="portalPreview" style="width:150px;height:150px;border-radius:50%;border:10px solid #aab2bd;box-shadow:0 0 28px #35e6a188,inset 0 0 30px #35e6a1;background:radial-gradient(ellipse,#35e6a155,#07110f 65%);margin:15px auto"></div>
+<div class="eyebrow" id="previewStyle">RICK C-137</div><p class="muted">L'aperçu change selon tes couleurs.</p>
+</div></div>
+<button class="primary" onclick="savePortalGun()">TERMINER MON PISTOLET À PORTAIL →</button></section>`;
+const color=$('#gunColor'),body=$('#gunBody');
+color.addEventListener('input',updatePortalPreview);body.addEventListener('input',updatePortalPreview);
+}
+function pickGunStyle(button,style){
+document.querySelectorAll('[data-group="gunStyle"] .option').forEach(b=>b.classList.remove('selected'));button.classList.add('selected');
+const desc={'Rick C-137':'Design classique, robuste et bricolé, avec une silhouette reconnaissable.','Rick Prime':'Design futuriste, épuré et sophistiqué.','Evil Morty':'Design discret, compact et minimaliste.','Personnalisé':'Tu choisis librement les couleurs et le nom de ton invention.'};
+$('#gunStyleDesc').textContent=desc[style];$('#previewStyle').textContent=style.toUpperCase();
+}
+function updatePortalPreview(){const c=$('#gunColor').value,b=$('#gunBody').value;$('#portalPreview').style.borderColor=b;$('#portalPreview').style.boxShadow=`0 0 28px ${c}88,inset 0 0 30px ${c}`;$('#portalPreview').style.background=`radial-gradient(ellipse,${c}55,#07110f 65%)`}
+function savePortalGun(){
+const style=document.querySelector('[data-group="gunStyle"] .selected')?.textContent||'Rick C-137';
+state.portalGun={name:$('#gunName').value.trim()||'Mon portail',style,portalColor:$('#gunColor').value,bodyColor:$('#gunBody').value};
+state.log.push('À 16 ANS — Tu as fabriqué ton pistolet à portail : '+state.portalGun.name+' · style '+style+'.');
+state.chapter++;save();render();toast('Ton pistolet à portail est enregistré !');
+}
+function renderCharacter(a){$('#pageTitle').textContent='PERSONNAGE';$('#pageSub').textContent='Fiche de '+state.name;a.innerHTML=`<div class="grid" style="grid-template-columns:1fr 1fr"><section class="panel"><h3>◈ IDENTITÉ</h3>${[['Nom',state.name],['Âge actuel',ageNow()+' ans'],['Étape de vie',ageStage(ageNow())],['Espèce',state.species],['Rôle',state.role],['Alignement',state.alignment],['Dimension de naissance',state.origin],['Numéro de dimension',state.dimensionNumber||'Inconnue'],['Backstory',state.backstory||'Non définie'],['Traits de départ',(state.traits||[]).join(', ')||'Aucun'],['Voie choisie',state.path==='solo'?'Indépendant':state.path==='rick'?'Avec Rick':'Pas encore choisie'],['Pistolet à portail',state.portalGun?state.portalGun.name+' · '+state.portalGun.style:'Pas encore fabriqué'],['Niveau',state.level],['Expérience',state.xp+'/50'],['Monnaie',state.cash+' Blots']].map(x=>`<div class="right-item"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('')}</section><section class="panel"><h3>ϟ ATTRIBUTS</h3>${Object.entries(state.stats).map(([k,v])=>`<div class="stat"><div class="statline"><span>${statName(k)}</span><strong>${v}/100</strong></div><div class="bar"><span style="width:${v}%"></span></div></div>`).join('')}</section></div><section class="panel"><h3>ÉVOLUTION AVEC L'ÂGE</h3><div class="eyebrow">${ageStage(ageNow())} · ${ageNow()} ANS</div><p>${ageDescription(ageNow())}</p><div class="right-item"><span>Prochain anniversaire</span><strong>${12-((state.elapsedMonths||0)%12)} mois</strong></div><p class="muted">Le temps avance à chaque décision importante. À chaque anniversaire, ton personnage progresse naturellement. Les étapes de vie changent son développement et peuvent ouvrir de nouvelles possibilités narratives.</p></section><section class="panel"><h3>PROGRESSION</h3><p class="muted">Tes décisions améliorent tes attributs. D'autres compétences, équipements et spécialisations pourront être débloqués au fil des chapitres.</p></section>`}
+function renderMissions(a){$('#pageTitle').textContent='MISSIONS';$('#pageSub').textContent='Contrats, objectifs et occasions';ensureQuests();const active=state.quests.filter(q=>q.status==='active');const available=state.quests.filter(q=>q.status==='available');const done=state.quests.filter(q=>q.status==='completed');a.innerHTML=`<section class="panel"><h3>⚑ MISSION PRINCIPALE</h3><div class="right-item"><span>${state.chapter>=3?'Construire ta propre légende':'Trouver ta place dans le multivers'}</span><em>${state.chapter>=3?'AVENTURE LIBRE':'EN COURS'}</em></div><p class="muted">Les contrats changent selon ta progression et la dimension où tu te trouves. Tes compétences et ton profil influencent leur réussite.</p></section>${active.map(q=>`<section class="panel"><div class="eyebrow">MISSION ACTIVE · ${q.kind}</div><h3>${q.title}</h3><p>${q.desc}</p><button class="primary" onclick="continueQuest()">POURSUIVRE →</button></section>`).join('')}<section class="panel"><h3>CONTRATS DISPONIBLES</h3>${available.map(q=>`<div class="panel"><div class="eyebrow">${q.kind} · ${dimensionName(q.dimension)}</div><h3>${q.title}</h3><p class="muted">${q.desc}</p><div class="right-item"><span>Récompense</span><strong>${q.reward} Blots · ${q.xp} XP</strong></div><button class="secondary" onclick="acceptQuest('${q.id}')">ACCEPTER LA MISSION</button></div>`).join('')||'<p class="muted">Aucun contrat disponible. Explore une autre dimension pour en découvrir.</p>'}</section><section class="panel"><h3>MISSIONS TERMINÉES</h3><p>${done.length?done.map(q=>q.title).join(' · '):'Aucune mission terminée pour le moment.'}</p></section>`}
+function renderRelations(a){$('#pageTitle').textContent='RELATIONS';$('#pageSub').textContent='Les gens se souviennent de tes actes';a.innerHTML=`<section class="panel"><h3>♧ PERSONNAGES RENCONTRÉS</h3>${Object.entries(state.relations).map(([k,v])=>`<div class="right-item"><span>${k}</span><em>${v>=3?'ALLIÉ DE CONFIANCE':v>0?'BONNE IMPRESSION':v<0?'MÉFIANT':'NEUTRE'} · ${v}</em></div>`).join('')}<p class="muted">Tes réponses influencent la confiance, les dialogues et les possibilités futures.</p></section>`}
+const dimensionCatalog=[
+ {id:'4-B',name:'Station interdimensionnelle',desc:'Un carrefour animé rempli de voyageurs, de marchands et de chasseurs de primes.',event:'Des voyageurs de dizaines d’espèces se croisent. Un marchand te propose un contrat.'},
+ {id:'C-500',name:'Terre cyberpunk',desc:'Une mégalopole de néons, de corporations et de rues surveillées.',event:'Un contact local te propose un travail discret. Les corporations surveillent les portails.'},
+ {id:'W-17',name:'Terre post-apocalyptique',desc:'Un monde en ruines où des communautés tentent de reconstruire la civilisation.',event:'Une communauté te demande de l’aide pour retrouver des ressources.'},
+ {id:'GZ-9',name:'Gazorpazorp',desc:'Une planète alien aux cités étranges et aux coutumes très différentes.',event:'Les habitants te prennent pour un voyageur venu d’une autre galaxie.'},
+ {id:'M-88',name:'Dimension océanique',desc:'Un monde presque entièrement recouvert d’océans et de cités sous-marines.',event:'Une cité sous-marine détecte ton arrivée et t’invite à rencontrer ses dirigeants.'},
+ {id:'R-0',name:'Citadelle des Ricks',desc:'Une immense cité où vivent des Ricks et des Mortys de nombreuses réalités.',event:'Les autorités de la Citadelle remarquent ton pistolet à portail et ton numéro de dimension.'},
+ {id:'X-31',name:'Dimension sauvage',desc:'Une jungle immense peuplée de créatures et de plantes inconnues.',event:'Tu découvres des traces d’une expédition disparue.'},
+ {id:'N-12',name:'Dimension miroir',desc:'Une réalité familière, mais où certains événements ont pris une autre direction.',event:'Tu aperçois une personne qui te ressemble étrangement.'}
+,
+ {id:'A-101',name:'Terre des dinosaures',desc:'Une planète où les dinosaures ont évolué jusqu’à bâtir leurs propres cités.',event:'Un guide dinosaure te propose de visiter les archives de son peuple.'},
+ {id:'B-204',name:'Dimension sucrée',desc:'Des villes en bonbons, des forêts de réglisse et des habitants étonnamment sérieux.',event:'Le maire te demande de retrouver la recette disparue du Grand Gâteau.'},
+ {id:'D-009',name:'Désert infini',desc:'Des dunes sans fin, des oasis rares et des caravanes qui suivent les étoiles.',event:'Une caravane te propose de l’accompagner jusqu’à une cité enfouie.'},
+ {id:'E-777',name:'Terre inversée',desc:'La gravité et les habitudes semblent fonctionner à l’envers.',event:'Un scientifique local cherche à comprendre pourquoi ton arrivée a perturbé la gravité.'},
+ {id:'F-013',name:'Dimension miniature',desc:'Un univers minuscule où les insectes sont les plus grandes créatures.',event:'Un peuple de petits habitants te prend pour une montagne vivante.'},
+ {id:'H-222',name:'Royaume médiéval',desc:'Châteaux, guildes, marchés et inventions alimentées par une étrange énergie.',event:'Une guilde te propose une quête pour retrouver une relique perdue.'},
+ {id:'I-404',name:'Dimension glitch',desc:'La réalité se déforme parfois comme un jeu vidéo mal chargé.',event:'Un habitant te demande de retrouver les fragments d’une zone effacée.'},
+ {id:'J-616',name:'Métropole volante',desc:'Des cités flottent au-dessus d’un océan de nuages.',event:'Un pilote te propose une place à bord de son dirigeable.'},
+ {id:'K-030',name:'Terre des robots',desc:'Des machines conscientes ont construit une société entièrement automatisée.',event:'Un robot archiviste veut échanger des informations sur ton monde natal.'},
+ {id:'L-909',name:'Dimension volcanique',desc:'Des îles de roche noire entourent des volcans actifs et des villes protégées.',event:'Une équipe de chercheurs sollicite ton aide pour explorer une ancienne station.'},
+ {id:'P-111',name:'Forêt géante',desc:'Les arbres sont si hauts que leurs branches forment des villages suspendus.',event:'Une éclaireuse te demande de retrouver un messager perdu dans les hauteurs.'},
+ {id:'Q-808',name:'Terre glacée',desc:'Un monde couvert de glace où les habitants vivent dans des cités chauffées par géothermie.',event:'Une station météo a cessé d’émettre et une équipe cherche un volontaire.'},
+ {id:'S-222',name:'Dimension musicale',desc:'Les sons influencent les paysages et chaque ville possède sa propre mélodie.',event:'Un musicien te demande de retrouver une note mystérieusement disparue.'},
+ {id:'T-515',name:'Archipel céleste',desc:'Des îles rocheuses dérivent dans un ciel violet, reliées par des ponts anciens.',event:'Une cartographe te propose de découvrir une île absente de toutes les cartes.'},
+ {id:'U-010',name:'Terre des clones',desc:'Une société composée de copies qui cherchent chacune leur propre identité.',event:'Un clone affirme connaître quelqu’un qui porte exactement ton nom.'},
+ {id:'V-321',name:'Dimension végétale',desc:'Les plantes pensent, communiquent et ont construit des cités-racines.',event:'Un ancien arbre te demande de transmettre un message à une autre forêt.'},
+ {id:'Y-707',name:'Ville souterraine',desc:'Une immense civilisation vit sous la surface, dans des tunnels illuminés.',event:'Un mécanicien t’invite à réparer un ancien ascenseur inter-niveaux.'},
+ {id:'Z-001',name:'Dimension silencieuse',desc:'Aucun son ne semble exister et les habitants communiquent par lumière.',event:'Une habitante te confie une carte lumineuse menant à une zone interdite.'},
+ {id:'AA-42',name:'Terre des samouraïs',desc:'Un monde de clans, de traditions et de cités fortifiées.',event:'Un messager cherche quelqu’un pour remettre un pli à un chef de clan.'},
+ {id:'AB-88',name:'Dimension spatiale',desc:'Des stations et des vaisseaux forment un réseau commercial entre planètes.',event:'Un capitaine te propose un contrat de livraison interstellaire.'},
+ {id:'AC-12',name:'Planète champignon',desc:'Des forêts de champignons géants entourent des villages colorés.',event:'Un botaniste veut que tu l’aides à identifier une espèce rare.'},
+ {id:'AD-600',name:'Terre abandonnée',desc:'Les grandes villes sont désertes et la nature reprend ses droits.',event:'Un signal radio vient d’un ancien centre de recherche.'},
+ {id:'AE-73',name:'Dimension des rêves',desc:'Les paysages changent selon les pensées et les souvenirs des visiteurs.',event:'Un habitant te demande de retrouver le chemin vers son souvenir préféré.'},
+ {id:'AF-19',name:'Cité du futur',desc:'Une ville ultra-moderne où transports autonomes et hologrammes sont partout.',event:'Une inventrice te propose de tester un prototype de navigation.'},
+ {id:'AG-505',name:'Terre des pirates',desc:'Des océans immenses, des ports animés et des équipages en quête de trésors.',event:'Une capitaine te propose une chasse au trésor sur une île inconnue.'},
+ {id:'AH-303',name:'Dimension cristalline',desc:'Des montagnes de cristal reflètent la lumière en mille couleurs.',event:'Un mineur a découvert une porte ancienne au fond d’une galerie.'},
+ {id:'AJ-808',name:'Terre des géants',desc:'Les habitants sont immenses et les villages humains sont construits à leur échelle.',event:'Un jeune géant te propose de visiter sa ville.'},
+ {id:'AK-014',name:'Dimension temporelle',desc:'Des zones où le temps passe à des vitesses différentes.',event:'Une chercheuse te demande de retrouver une sonde coincée dans une boucle temporelle.'},
+ {id:'AL-999',name:'Terre des sorciers',desc:'Une société où la magie est étudiée comme une science.',event:'Un apprenti cherche un partenaire pour explorer une bibliothèque oubliée.'},
+ {id:'AM-250',name:'Dimension arcade',desc:'Le monde ressemble à une immense salle d’arcade vivante.',event:'Un joueur local te lance un défi pour gagner un ticket rare.'},
+ {id:'AN-060',name:'Planète des insectes',desc:'Des cités sont bâties dans des cavernes et des arbres creux.',event:'Une exploratrice te demande d’escorter une cargaison jusqu’à la capitale.'},
+ {id:'AP-777',name:'Terre des inventeurs',desc:'Chaque quartier est rempli d’ateliers, de machines et d’expériences.',event:'Un inventeur excentrique a besoin d’un testeur pour son nouveau véhicule.'},
+ {id:'AQ-321',name:'Dimension volcanique bleue',desc:'Des rivières de lave bleue traversent des plaines de pierre lumineuse.',event:'Un géologue te propose d’étudier une étrange source d’énergie.'},
+ {id:'AR-404',name:'Monde fracturé',desc:'Des morceaux de paysages de plusieurs réalités flottent dans le ciel.',event:'Une pilote cherche à cartographier un passage sûr entre les fragments.'},
+ {id:'AS-118',name:'Terre des animaux parlants',desc:'Les animaux ont développé des villes, des métiers et des cultures variées.',event:'Un détective renard te propose de résoudre une petite affaire locale.'},
+ {id:'AT-900',name:'Dimension du brouillard',desc:'Des villages apparaissent et disparaissent dans une brume permanente.',event:'Un gardien te remet une lanterne qui révèle un chemin caché.'},
+ {id:'AU-212',name:'Océan de nuages',desc:'Des créatures flottantes vivent dans des mers de vapeur et de brume.',event:'Une navigatrice te propose une expédition à bord de son ballon.'},
+ {id:'AV-515',name:'Terre des trains',desc:'Un réseau ferroviaire gigantesque relie toutes les régions du monde.',event:'Un contrôleur te demande de retrouver un wagon disparu.'},
+ {id:'AW-030',name:'Dimension des miroirs',desc:'Chaque miroir ouvre sur une version différente du lieu où tu te trouves.',event:'Ton reflet semble vouloir te transmettre un avertissement.'},
+ {id:'AX-606',name:'Planète des lumières',desc:'Des aurores permanentes éclairent des cités construites dans la nuit.',event:'Une astronome t’invite à observer un phénomène rare.'},
+ {id:'AY-404',name:'Terre préhistorique',desc:'Des tribus anciennes cohabitent avec une faune spectaculaire.',event:'Un éclaireur te demande de retrouver un outil perdu près d’un ancien camp.'},
+ {id:'AZ-808',name:'Dimension des fêtes',desc:'Un monde où chaque ville prépare un festival différent toute l’année.',event:'Les organisateurs ont besoin d’aide pour retrouver leur mascotte.'}
+
+];
+function travelToDimension(id){
+ const d=dimensionCatalog.find(x=>x.id===id);if(!d)return;
+ if(!state.portalGun){toast('Tu dois d’abord fabriquer ton pistolet à portail à 16 ans.');return}
+ if(state.currentDimension===id){toast('Tu es déjà dans cette dimension.');return}
+ state.currentDimension=id;
+ state.quests=(state.quests||[]).filter(q=>q.status!=='available');
+ if(!state.visitedDimensions.includes(id))state.visitedDimensions.push(id);
+ state.elapsedMonths=(state.elapsedMonths||0)+1;
+ state.log.push('VOYAGE — Arrivée à '+d.name+' ('+d.id+'). '+d.event);
+ state.xp+=10;if(state.xp>=50){state.level++;state.xp-=50}
+ save();render();toast('Portail ouvert : '+d.name);
+}
+function renderMultiverse(a){
+ $('#pageTitle').textContent='MULTIVERS';$('#pageSub').textContent='Choisis ta prochaine destination';
+ const current=state.currentDimension||state.dimensionNumber;
+ const destinations=dimensionCatalog.map(d=>`<div class="panel"><div class="eyebrow">DIMENSION ${d.id}</div><h3>${d.name}</h3><p class="muted">${d.desc}</p><div class="right-item"><span>Statut</span><em>${state.visitedDimensions.includes(d.id)?'DÉJÀ VISITÉE':'À EXPLORER'}</em></div><button class="primary" ${!state.portalGun?'disabled title="Fabrique ton pistolet à portail à 16 ans"':''} onclick="travelToDimension('${d.id}')">OUVRIR UN PORTAIL →</button></div>`).join('');
+ a.innerHTML=`<section class="panel"><h3>◎ TA POSITION ACTUELLE</h3><div class="eyebrow">DIMENSION ${current}</div><h2>${current===state.dimensionNumber?state.origin:(dimensionCatalog.find(d=>d.id===current)?.name||'Dimension inconnue')}</h2><p class="muted">Dimension de naissance : ${state.dimensionNumber} · ${state.origin}</p><p class="muted">${state.portalGun?'Ton pistolet à portail est prêt. Tu peux voyager librement entre les dimensions.':'Tu pourras voyager après avoir fabriqué ton pistolet à portail à 16 ans.'}</p><button class="secondary" onclick="travelHome()">RETOURNER DANS MA DIMENSION DE NAISSANCE</button></section><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(230px,1fr))">${destinations}</div><section class="panel"><h3>DIMENSIONS VISITÉES</h3><p>${state.visitedDimensions.length?state.visitedDimensions.map(id=>dimensionCatalog.find(d=>d.id===id)?.name||id).join(' · '):'Aucune visite enregistrée.'}</p></section>`;
+}
+function travelHome(){
+ state.currentDimension=state.dimensionNumber||'Inconnue';
+ state.log.push('VOYAGE — Retour dans ta dimension de naissance : '+state.currentDimension+'.');
+ save();render();toast('Retour à la maison.');
+}
+function renderCodex(a){$('#pageTitle').textContent='CODEX';$('#pageSub').textContent='Archives interdimensionnelles';a.innerHTML=`<section class="panel"><h3>▤ ENTRÉES DÉBLOQUÉES</h3><div class="right-item"><span>Rick Sanchez</span><em>${state.chapter>0?'RENCONTRÉ':'INCONNU'}</em></div><div class="right-item"><span>Morty Smith</span><em>${state.chapter>0?'RENCONTRÉ':'INCONNU'}</em></div><div class="right-item"><span>Les Blots</span><em>MONNAIE INTERDIMENSIONNELLE</em></div><div class="right-item"><span>Portails instables</span><em>TECHNOLOGIE</em></div></section><section class="panel"><h3>HISTORIQUE DES CHOIX</h3>${state.log.map(x=>`<div class="journal-entry">${x}</div>`).join('')||'<span class="muted">Tes choix apparaîtront ici.</span>'}</section>`}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{currentTab=b.dataset.tab;render()});
+async function resetGame(){if(confirm('Effacer cette partie et recommencer ?')){try{await fetch('/api/save',{method:'DELETE',credentials:'same-origin'});}catch(e){}localStorage.removeItem('multiverseRPsave');location.reload()}}
+initAuth();
+</script>
+</body></html>
